@@ -37,14 +37,19 @@ struct itemlista *inserir_elemento_final(struct lista *mitemlista, void* dado_in
 	return novo_elemento;
 }
 
-void percorre_lista(struct lista *mlista, void (*functionPtr)(void *dado, int i, ...)){
+void percorre_lista(struct lista *mlista, void (*functionPtr)(void *dado, int n, va_list vargs), int n, ...){
 	struct itemlista *mitemlista = (*mlista).start;
 	int j;
+	va_list args;
+
+	va_start(args, n);
 	for (j = 0; j < (*mlista).size ; j++){
-		(*functionPtr)( (*mitemlista).dado, j);
+		(*functionPtr)( (*mitemlista).dado, n, args);
 		mitemlista = (*mitemlista).proximo;
 	}
+	va_end(args);
 }
+
 
 
 // struct itemlista *busca_elemento_itemlista(struct mitemlista *mitemlista, char itens, void* dado){
