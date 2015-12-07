@@ -19,7 +19,7 @@ void imprimir_lista(void *dado, int n, ...){
 //
 //busca_item(void *dado, int numero_de_parametros, int i, int c, struct dados ret);
 //
-void busca_item(void *mdado, int n, ...){
+void busca_item(void *dado, int n, ...){
 	va_list args;
 	char a=0;
 
@@ -92,7 +92,7 @@ int main(){
 	//eu pensava que daria para usar algo assim:
 	// percorre_lista(lista1, busca(NULL, 2, a, c) );
 	//mas consigo apenas sem passar nada, como:
-	// percorre_lista(lista1, &busca_item);
+	percorre_lista(lista1, &busca_item);
 	//então teria que pensar numa forma de passar os parâmetros para usar na comparação dentro da função busca
 
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
