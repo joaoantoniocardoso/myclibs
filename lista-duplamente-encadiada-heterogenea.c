@@ -36,94 +36,63 @@ struct itemlista *inserir_elemento_final(struct lista *mitemlista, void* dado_in
 
 	return novo_elemento;
 }
-
-void percorre_lista(struct lista *mlista, void (*functionPtr)(void *dado, int n, va_list vargs), int n, ...){
+//todo: char run_all_list para percorrer a lista inteira ou retornar no primeiro caso de retorno de ponteiro não nulo
+void *percorre_lista(struct lista *mlista, void *(*functionPtr)(void *dado, int n, va_list vargs), int n, ...){
 	struct itemlista *mitemlista = (*mlista).start;
 	int j;
 	va_list args;
+	void *r1 = NULL, *r2 = NULL;
 
-	va_start(args, n);
+	//percorre a lista
 	for (j = 0; j < (*mlista).size ; j++){
-		(*functionPtr)( (*mitemlista).dado, n, args);
+		va_start(args, n); //recebe os argumentos da va_list args
+		r1 = (*functionPtr)( (*mitemlista).dado, n, args);
+		if (r1!=NULL) r2 = r1;
 		mitemlista = (*mitemlista).proximo;
+		va_end(args); //limpa a lista
 	}
-	va_end(args);
+
+	//retorna
+	return r2;
 }
 
+struct itemlista *___compara_elemento_com_dado(struct lista *mlista, void *dado){
+	struct itemlista *mitemlista = (*mlista).start;
+	int j;
 
+	for (j = 0; j < (*mlista).size ; j++){
+		if((*mitemlista).dado == dado) return mitemlista;;
+		mitemlista = (*mitemlista).proximo;
+	}
+	return NULL;
+}
 
-// struct itemlista *busca_elemento_itemlista(struct mitemlista *mitemlista, char itens, void* dado){
-// 	printf("Buscando...");
-// 	int i, j;
-// 	struct itemlista *mmitemlista = (*mitemlista).start;
+void *remover_elemento(struct lista *mlista, void *dado){
+	if (dado==NULL) return NULL; //erro
+	else{
 
-// 	if(itens && 10){
-// 		for (i=0;i<(*mitemlista).size;i++){
-// 			if( (*(*mmitemlista).dado).c == dado.c){
-// 				//compara o proximo se tiver configurado
-// 				if(itens && 01){
-// 					for (j=0;j<(*mitemlista).size;j++){
-// 						if( (*(*mmitemlista).dado).i == dado.i){
-// 							printf("\nElemento encontrado.\n");
-// 							return mmitemlista;
-// 						}else{
-// 						mmitemlista = (*mmitemlista).proximo;
-// 						printf(".");
-// 						}
-// 					}
-// 				}else{
-// 					printf("\nElemento encontrado.\n");
-// 					return mmitemlista;
-// 				}
-// 			}else{
-// 			mmitemlista = (*mmitemlista).proximo;
-// 			printf(".");
-// 			}
-// 		}
-// 	}
-	
-// 	printf("\nA itemlista foi percorrida e o elemento não foi encontrado. Pressione <enter> para continuar.\n");
-// 	getchar();
-
-// 	return NULL;
-// }
-
-void* remover_elemento(struct lista *mlista, struct itemlista *elemento){
-	// if (elemento==NULL) return NULL; //erro
-	// else{
+		struct itemlista *elemento = ___compara_elemento_com_dado(mlista, dado);
 		struct itemlista *elemento_anterior = (*elemento).anterior;
 		struct itemlista *elemento_proximo = (*elemento).proximo;
 		
-		// if((*elemento).proximo == NULL){
-		// 	//ultimo
-		// 	(*mlista).end = (*elemento).anterior;
-		// 	(*elemento_anterior).proximo = NULL;
+		if((*elemento).proximo == NULL){
+			//ultimo
+			(*mlista).end = (*elemento).anterior;
+			(*elemento_anterior).proximo = NULL;
 
-		// }else if((*elemento).anterior == NULL){
-		// 	//primeiro
-		// 	(*mlista).start = (*elemento).proximo;
-		// 	(*elemento_proximo).anterior = NULL;
-		// }else{
+		}else if((*elemento).anterior == NULL){
+			//primeiro
+			(*mlista).start = (*elemento).proximo;
+			(*elemento_proximo).anterior = NULL;
+		}else{
 			(*elemento_anterior).proximo = (*elemento).proximo;
 			(*elemento_proximo).anterior = (*elemento).anterior;
-		// }
+		}
 
 		(*mlista).size--;
 		// free((*elemento).dado);
-		// free(elemento);
+		free(elemento);
 
-		return NULL;//(*elemento).dado; //ok
-	// }
+		return &((*elemento).dado); //ok
+	}
 }
-
-// void imprimir_itemlista(struct lista *mitemlista){
-// 	printf("A sua itemlista é: ");
-// 	struct itemlista *mmitemlista = (*mitemlista).start;
-// 	int i;
-// 	for (i = 0; i < (*mitemlista).size ; i++){
-// 		printf("%d,", (*(*mmitemlista).dado).i);
-// 		printf("%c", (*(*mmitemlista).dado).c);
-// 		printf("\t");
-// 		mmitemlista = (*mmitemlista).proximo;
-// 	}
-// }

@@ -9,45 +9,13 @@ struct dados{
 	char c;
 };
 
-static void imprimir_item(void *dado, int n, va_list vargs){
-	struct dados *mdado = dado;
-	printf("%d,", (*mdado).i);
-	printf("%c", (*mdado).c);
-	printf("\t");
-}
-
-//
-//busca_item(void *dado, int numero_de_parametros, int i, int c, struct dados ret);
-//
-
-static void busca_item(void *dado, int n, va_list vargs){
-	char a=0;
-
-	struct dados *mdado = (struct dados*) dado;
-	
-	//recebe os parametros em ordem
-	int icomp = (int) va_arg(vargs, int);
-	char ccomp = (char) va_arg(vargs, int);
-	struct dados *retorno = va_arg(vargs, struct dados*);
-
-	//começa a comparação
-	if((*mdado).i == icomp){
-		// printf("\nint ok\n");
-		a++;
-	}
-	if((*mdado).c == ccomp){
-		// printf("\nchar ok\n");
-		a++;
-	}
-
-	//retorna
-	if (retorno!=NULL) retorno = a>=2?dado:NULL;
-}
+static void *imprimir_item(void *dado, int n, va_list vargs);
+static void *busca_item(void *dado, int n, va_list vargs);
 
 int main(){
 	int a;
 	char c;
-	struct dados *dado_temp;
+	struct dados *dado_temp, *dado_temp2;
 
 	//testando a criação da lista
 	printf("Insira o primeiro item de sua itemlista no formato <inteiro,char> ");
@@ -63,7 +31,7 @@ int main(){
 	//testando inserção de dados na lista
 	int i;
 	for(i = 0; i<2; i++){
-		printf("\nInsira um novo elemento em sua itemlista  no formato <inteiro char>: ");
+		printf("\nInsira um novo elemento em sua itemlista no formato <inteiro,char>: ");
 		dado_temp = (struct dados*)malloc(sizeof(struct dados));
 		scanf("%d,%c", &a, &c);
 		getchar();
@@ -72,30 +40,61 @@ int main(){
 		inserir_elemento_final(lista1, (void*)dado_temp);
 		printf("A sua itemlista é: ");
 		percorre_lista(lista1, &imprimir_item, 0);
-	}
+	}	
 
 	//testando a remoção de dados na lista
-	printf("\nInsira um elemento a ser removido da itemlista: ");
+	printf("\nInsira um elemento a ser removido da itemlista no formato <inteiro,char>: ");
 	dado_temp = (struct dados*)malloc(sizeof(struct dados));
 	scanf("%d,%c", &a, &c);
 	(*dado_temp).i = a;
 	(*dado_temp).c = c;
 
+	// faz uma busca pelo dado
 	printf("Buscando...");
-	percorre_lista(lista1, &busca_item, 2, a, c, dado_temp);
-	if(dado_temp!=NULL)	{
+	dado_temp2 = (struct dados*)percorre_lista(lista1, &busca_item, 2, a, c);
+	// verifica se foi encontrado
+	if(dado_temp2!=NULL){
 		printf("\nElemento encontrado: ");
-		imprimir_item(dado_temp, 0, NULL);
-	}else printf("\n O elemento buscado não foi encontrado\n");
+		imprimir_item(dado_temp2, 0, NULL);
+	}else printf("\n O elemento buscado não foi encontrado. \n");
 
-	//TODO: remover elemento
-	// remover_elemento(lista1, (void*)dado_temp);
+	// tenta remover o elemento e verifica
+	if(dado_temp2 != NULL && remover_elemento(lista1, (void*)dado_temp2) != NULL){
+		printf("\nO elemento foi removido. \n");
+	}else printf("O elemento não foi removido. \n");
 	
-	//TODO: procurar elemento novamente para verificar remoção
-	// printf("\nO valor foi removido\n");
+	// lista novamente
 	printf("A sua itemlista é: ");
 	percorre_lista(lista1, &imprimir_item, 0);
+
 	getchar();
 
 	return 0;
+}
+
+static void *imprimir_item(void *dado, int n, va_list vargs){
+	struct dados *mdado = dado;
+	printf("%d,", (*mdado).i);
+	printf("%c", (*mdado).c);
+	printf("\t");
+	return NULL;
+}
+
+static void *busca_item(void *dado, int n, va_list vargs){
+	int a=0;
+
+	struct dados *mdado = (struct dados*) dado;
+	
+	//recebe os parametros em ordem
+	int icomp = (int) va_arg(vargs, int);
+	char ccomp = (char) va_arg(vargs, int);
+
+	//começa a comparação
+	if((*mdado).i == icomp) a++;
+	if((*mdado).c == ccomp) a++;
+
+	//retorna
+	// return dado;
+	if(a>1) return mdado;
+	else return NULL;
 }
